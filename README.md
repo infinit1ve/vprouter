@@ -54,7 +54,7 @@ Required values:
 * WireGuard peer public key
 * WireGuard tunnel address
 * WireGuard endpoint (address:port)
-* DNS server address
+* DNS server address (must be an IPv4 address)
 
 Optional values:
 
