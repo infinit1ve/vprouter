@@ -41,8 +41,6 @@ The current implementation successfully:
 Current known limitations:
 
 * no IPv6 support
-* DNS leak protection is incomplete
-* DNS settings from Tailscale are not inherited
 * no full kill-switch yet
 
 ## Environment variables
@@ -56,6 +54,7 @@ Required values:
 * WireGuard peer public key
 * WireGuard tunnel address
 * WireGuard endpoint (address:port)
+* DNS server address
 
 Optional values:
 
@@ -69,6 +68,8 @@ docker run -d \
   --name vprouter \
   --cap-add=NET_ADMIN \
   --device=/dev/net/tun \
+  --sysctl net.ipv4.ip_forward=1 \
+  --sysctl net.ipv6.conf.all.forwarding=1 \
   -v ./tailscale:/var/lib/tailscale \
   --env-file .env \
   ghcr.io/infinit1ve/vprouter:latest
@@ -82,6 +83,9 @@ services:
     image: ghcr.io/infinit1ve/vprouter:latest
     env_file:
       - .env
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
     cap_add:
       - NET_ADMIN
     devices:
@@ -132,11 +136,9 @@ The container:
 ## Roadmap
 
 * kill-switch support
-* DNS hardening
 * encrypted upstream DNS
 * safer route management
 * health checks
-* split tunneling
 * route policy modes
 * Headscale support
 
