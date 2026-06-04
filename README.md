@@ -51,16 +51,16 @@ Copy .env.example to .env and fill in your Tailscale and WireGuard credentials.
 
 Required values:
 
-Tailscale auth key (Obtainable in the [Admin Panel](https://login.tailscale.com/admin/settings/keys))
-WireGuard private key
-WireGuard peer public key
-WireGuard tunnel address
-WireGuard endpoint (address:port)
+* Tailscale auth key (Obtainable in the [Admin Panel](https://login.tailscale.com/admin/settings/keys))
+* WireGuard private key
+* WireGuard peer public key
+* WireGuard tunnel address
+* WireGuard endpoint (address:port)
 
 Optional values:
 
-custom Tailscale hostname
-custom AllowedIPs override
+* custom Tailscale hostname
+* custom AllowedIPs override
 
 ## Docker
 
@@ -136,11 +136,9 @@ The container:
 * encrypted upstream DNS
 * safer route management
 * health checks
-* provider adapters
-* config import support
 * split tunneling
 * route policy modes
-* Headscale suppor
+* Headscale support
 
 ## License
 
