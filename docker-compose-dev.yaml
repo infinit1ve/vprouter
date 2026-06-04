@@ -8,5 +8,4 @@ services:
     cap_add:
       - NET_ADMIN
     volumes:
-      - ./tailscale:/var/lib/tailscale # Tailscale state directory
-      - ./conf:/etc/conf # WireGuard configs
+      - /tailscale:/var/lib/tailscale # Tailscale state directory

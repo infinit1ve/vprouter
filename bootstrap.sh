@@ -29,6 +29,7 @@ if [ -z "$WIREGUARD_PEERKEY" ]; then
     exit 1
 fi
 
+mkdir -p /etc/wireguard
 cat <<EOF > /etc/wireguard/wireguard.conf
 [Interface]
 PrivateKey = $WIREGUARD_PRIVATEKEY
@@ -39,7 +40,6 @@ AllowedIPs = ${WIREGUARD_ALLOWEDIPS:-0.0.0.0/0}
 Endpoint = $WIREGUARD_ENDPOINT
 EOF
 
-mkdir -p /etc/wireguard
 ip link add wg0 type wireguard
 wg setconf wg0 /etc/wireguard/wireguard.conf
 ip addr add "$WIREGUARD_ADDRESS" dev wg0
