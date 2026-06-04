@@ -70,7 +70,11 @@ DEFAULT_DEVICE=$(ip route | awk '/default/ {print $5}')
 echo "Adding WireGuard route"
 
 ip route add "${WIREGUARD_ENDPOINT%:*}" via "$DEFAULT_GATEWAY" dev "$DEFAULT_DEVICE"
+<<<<<<< HEAD
 ip route add "${DNS}/32" dev wg0
+=======
+ip route add ${DNS} dev wg0
+>>>>>>> 445df647fab3a2715305dfd4f9a305be1d90b36b
 ip route add 100.64.0.0/10 dev tailscale0
 ip route replace default dev wg0
 
