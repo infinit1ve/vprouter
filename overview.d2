@@ -1,0 +1,14 @@
+direction: right
+
+client: "Client"
+router: "vprouter"
+tailnet: "Tailscale peers"
+mullvad: "Mullvad / WireGuard"
+internet: "Internet"
+
+client -> router: "Tailscale"
+
+router -> tailnet: "ts.net / tailnet traffic"
+router -> mullvad: "all other traffic"
+
+mullvad -> internet: "exit to Internet"

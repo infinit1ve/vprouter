@@ -3,15 +3,7 @@ A containerized virtual private router that exposes a Tailscale exit node and ro
 
 vprouter is designed around a simple idea:
 
-```text
-Tailnet client
-    ↓
-Tailscale exit node
-    ↓
-WireGuard tunnel
-    ↓
-Internet
-```
+![Overview](overview.png)
 
 The project uses manual Linux routing, iptables forwarding, and NAT instead of `wg-quick` in order to provide explicit control over packet flow and future split-tunneling support.
 
