@@ -1,0 +1,12 @@
+services:
+  vprouter:
+    build: .
+    env_file:
+      - .env
+    devices:
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./tailscale:/var/lib/tailscale # Tailscale state directory
+      - ./conf:/etc/conf # WireGuard configs
