@@ -15,7 +15,7 @@ fi
 
 sleep 5
 tailscale set --auto-update
-tailscale up --authkey=$TS_AUTHKEY --advertise-exit-node --hostname=${TS_HOSTNAME:-vprouter}
+tailscale up --authkey=$TS_AUTHKEY --advertise-exit-node --hostname=${TS_HOSTNAME:-vprouter} --accept-dns=false
 
 echo "Waiting for tailscale status"
 
@@ -84,5 +84,53 @@ iptables -A vprouter-forward -m comment --comment "Drop unestablished traffic fr
 iptables -t nat -A POSTROUTING -o wg0 -j MASQUERADE -m comment --comment "Masquerade WireGuard traffic"
 
 echo "WireGuard setup complete"
+echo "Setting up split DNS"
+
+TAILNET_DOMAIN=$(tailscale status --json | jq -r '.MagicDNSSuffix')
+
+echo "Current tailnet domain: $TAILNET_DOMAIN"
+
+if [ -z "$TAILNET_DOMAIN" ]; then
+  echo "Tailnet domain was not detected"
+  exit 1
+fi
+
+if [ -z "$DNS" ]; then
+  echo "DNS not set"
+  exit 1
+fi
+
+cat <<EOF > /etc/dnsmasq.conf
+no-resolv
+listen-address=127.0.0.1
+bind-interfaces
+server=/${TAILNET_DOMAIN}/100.100.100.100
+server=${DNS}
+EOF
+
+if [ "$VPR_DEBUG" = "true" ]; then
+    dnsmasq &
+else
+    dnsmasq >/dev/null 2>&1 &
+fi
+
+cat <<EOF > /etc/resolv.conf
+nameserver 127.0.0.1
+EOF
+
+iptables -N vprouter-dns
+
+iptables -A vprouter-dns -o tailscale0 -p udp --dport 53 -m comment --comment "Allow Tailscale DNS traffic" -j ACCEPT
+iptables -A vprouter-dns -o tailscale0 -p tcp --dport 53 -m comment --comment "Allow Tailscale DNS traffic" -j ACCEPT
+iptables -A vprouter-dns -o wg0 -p udp --dport 53 -m comment --comment "Allow WireGuard DNS traffic" -j ACCEPT
+iptables -A vprouter-dns -o wg0 -p tcp --dport 53 -m comment --comment "Allow WireGuard DNS traffic" -j ACCEPT
+iptables -A vprouter-dns -o "$DEFAULT_DEVICE" -p udp --dport 53 -m comment --comment "Drop default DNS traffic" -j DROP
+iptables -A vprouter-dns -o "$DEFAULT_DEVICE" -p tcp --dport 53 -m comment --comment "Drop default DNS traffic" -j DROP
+iptables -A vprouter-dns -o "$DEFAULT_DEVICE" -p tcp --dport 853 -m comment --comment "Drop DNS over TLS traffic" -j DROP
+iptables -A vprouter-dns -j RETURN
+
+iptables -I OUTPUT -j vprouter-dns -m comment --comment "Manage DNS traffic"
+
+echo "Split DNS setup complete"
 
 wait

@@ -3,6 +3,8 @@ services:
     build: .
     env_file:
       - .env
+    sysctls:
+      - net.ipv4.ip_forward=1
     devices:
       - /dev/net/tun
     cap_add:
