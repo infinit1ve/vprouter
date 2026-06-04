@@ -1,8 +1,9 @@
 #!/bin/bash
 
-tailscale --version
-wg --version
-ip route
+if [ -z "$TS_AUTHKEY" ]; then
+    echo "TS_AUTHKEY is not set"
+    exit 1
+fi
 
 tailscaled &
 sleep 5
