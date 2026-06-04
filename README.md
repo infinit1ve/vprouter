@@ -1,5 +1,4 @@
 # vprouter
----
 A containerized virtual private router that exposes a Tailscale exit node and routes internet traffic through a WireGuard VPN endpoint.
 
 vprouter is designed around a simple idea:
